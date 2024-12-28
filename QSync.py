@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import os
+
 import sys
 import time
 import signal
@@ -11,6 +11,9 @@ import threading
 import subprocess
 import tkinter as tk
 from PIL import ImageTk
+
+# SCRIPT VERSION & Author: Anuj Das (ADx)
+SCRIPT_VERSION = "v1.1.0"
 
 
 
@@ -83,7 +86,7 @@ def start_ngrok(port):
 
 
 # This function is used to display QR Code for the generated Local/Global URL
-def displayQR(address, title="QSync"):
+def displayQR(address, title=f"QSync: {SCRIPT_VERSION}"):
     """Generate and display a QR code using Tkinter in a separate thread."""
     def run_tkinter():
         qr = qrcode.QRCode(
@@ -94,7 +97,7 @@ def displayQR(address, title="QSync"):
         )
         qr.add_data(address)
         qr.make(fit=True)
-        img = qr.make_image(fill_color="black", back_color="aqua")
+        img = qr.make_image(fill_color="black", back_color="white")
 
         # Display QR code using Tkinter
         root = tk.Tk()
@@ -148,7 +151,7 @@ def main():
     parser = argparse.ArgumentParser(
          description=(
             "QSync, also known as QuickSync!\n"
-            "It is developed by: Anuj Das (ADx)\n\n"
+            "This script is developed by: Anuj Das (ADx)\n\n"
             "QSync allows you to share files over local or global network with ease!\n\n"
 
             "[+] QSync enables easy file sharing by hosting a lightweight HTTP server on your local machine.\n" 
@@ -159,8 +162,10 @@ def main():
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
-    parser.add_argument("-l", metavar="PORT", type=int, help="Share over Local Network")
-    parser.add_argument("-g", metavar="PORT", type=int, help="Share Globally using Ngrok")
+
+    parser.add_argument("-v", "--version", action="version", version=f"QSync: {SCRIPT_VERSION}", help="show current script's version number and exit")
+    parser.add_argument("-l", metavar="PORT", type=int, help="share over local network")
+    parser.add_argument("-g", metavar="PORT", type=int, help="share globally using ngrok")
     args = parser.parse_args()
 
     if args.l:
@@ -173,7 +178,7 @@ def main():
         local_ip = get_local_ip()
         local_url = f"http://{local_ip}:{port}"
         print(f"Local URL: {local_url}")
-        displayQR(local_url, title="QSync - LAN") 
+        displayQR(local_url, title=f"QSync: {SCRIPT_VERSION} - Sharing Locally") 
 
     elif args.g:
         port = args.g
@@ -189,7 +194,7 @@ def main():
 
         if ngrok_url:
             print(f"Global URL: {ngrok_url}")
-            displayQR(ngrok_url, title="QSync - Global")
+            displayQR(ngrok_url, title=f"QSync: {SCRIPT_VERSION} - Sharing Globally")
         else:
             print("Failed to get Ngrok URL. Make sure Ngrok is installed and running.")
 
